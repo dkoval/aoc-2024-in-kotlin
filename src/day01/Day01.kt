@@ -8,15 +8,22 @@ import kotlin.math.abs
 private const val DAY_ID = "01"
 
 fun main() {
-    fun part1(input: List<String>): Long {
-        val xs = mutableListOf<Long>()
-        val ys = mutableListOf<Long>()
-
+    fun processInput(input: List<String>, block: (x: Long, y: Long) -> Unit) {
         for (line in input) {
             val (x, y) = line.split("""\s+""".toRegex()).asSequence()
                 .map { it.trim() }
                 .map { it.toLong() }
                 .toList()
+
+            block(x, y)
+        }
+    }
+
+    fun part1(input: List<String>): Long {
+        val xs = mutableListOf<Long>()
+        val ys = mutableListOf<Long>()
+
+        processInput(input) { x, y ->
             xs += x
             ys += y
         }
@@ -33,12 +40,7 @@ fun main() {
         val xs = mutableListOf<Long>()
         val counts = mutableMapOf<Long, Int>()
 
-        for (line in input) {
-            val (x, y) = line.split("""\s+""".toRegex()).asSequence()
-                .map { it.trim() }
-                .map { it.toLong() }
-                .toList()
-
+        processInput(input) { x, y ->
             xs += x
             counts[y] = (counts[y] ?: 0) + 1
         }
