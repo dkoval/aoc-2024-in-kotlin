@@ -26,7 +26,7 @@ fun main() {
             return true
         }
 
-        // Brute force: exclude levels[i] and see if the remaining levels remain safe
+        // Brute force: exclude levels[i] and see if the levels remain safe
         return (0 until levels.size).any { i ->
             val newLevels = levels.subList(0, i).toMutableList() + levels.subList(i + 1, levels.size)
             isSafePart1(newLevels)
