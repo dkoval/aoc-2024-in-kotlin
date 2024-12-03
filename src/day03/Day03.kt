@@ -9,10 +9,10 @@ private const val DAY_ID = "03"
 fun main() {
     fun part1(input: String): Int {
         val regex = """mul\((\d{1,3}),(\d{1,3})\)""".toRegex()
-        return regex.findAll(input).map { result ->
+        return regex.findAll(input).fold(0) { acc, result ->
             val (x, y) = result.destructured
-            x.toInt() * y.toInt()
-        }.sum()
+            acc + x.toInt() * y.toInt()
+        }
     }
 
     fun part2(input: String): Int {
@@ -33,8 +33,9 @@ fun main() {
                 else -> {
                     // op == mul(2,4)
                     if (enabled) {
-                        val (x, y) = op.removePrefix("mul(").removeSuffix(")").split(",").map { it.toInt() }
-                        x * y
+                        op.removePrefix("mul(").removeSuffix(")").split(",")
+                            .map { it.toInt() }
+                            .fold(1) { acc, x -> acc * x }
                     } else {
                         0
                     }
