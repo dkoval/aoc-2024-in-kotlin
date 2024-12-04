@@ -8,11 +8,7 @@ private const val DAY_ID = "04"
 fun main() {
     data class Cell(val row: Int, val col: Int)
 
-    val dirs = listOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1, -1 to -1, -1 to 1, 1 to -1, 1 to 1)
-
-    fun part1(input: List<String>): Int {
-        val keyword = "XMAS"
-
+    fun processInput(input: List<String>, keyword: String): Map<Char, Set<Cell>> {
         val grid = input.map { it.toList() }
         val m = grid.size
         val n = grid[0].size
@@ -27,6 +23,14 @@ fun main() {
                 }
             }
         }
+        return lookup
+    }
+
+    fun part1(input: List<String>): Int {
+        val keyword = "XMAS"
+        val lookup = processInput(input, keyword)
+
+        val dirs = listOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1, -1 to -1, -1 to 1, 1 to -1, 1 to 1)
 
         var total = 0
         for ((row, col) in lookup['X']!!) {
@@ -46,21 +50,7 @@ fun main() {
 
     fun part2(input: List<String>): Int {
         val keyword = "MAS"
-
-        val grid = input.map { it.toList() }
-        val m = grid.size
-        val n = grid[0].size
-
-        // records positions of X, M, A, S letters
-        val lookup = mutableMapOf<Char, MutableSet<Cell>>()
-        for (row in 0 until m) {
-            for (col in 0 until n) {
-                val c = grid[row][col]
-                if (c in keyword) {
-                    lookup.getOrPut(c) { mutableSetOf() } += Cell(row, col)
-                }
-            }
-        }
+        val lookup = processInput(input, keyword)
 
         var total = 0
         for ((row, col) in lookup['A']!!) {
