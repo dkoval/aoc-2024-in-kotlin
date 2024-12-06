@@ -33,28 +33,22 @@ fun main() {
         val m = grid.size
         val n = grid[0].size
 
-        fun traverse(row: Int, col: Int): Int {
-            val visited = mutableSetOf<Cell>()
-            var curr = Cell(row, col)
-            visited += curr
-
+        fun countVisitedCells(start: Cell): Int {
+            var curr = start
             var d = Direction.UP
+            val visited = mutableSetOf<Cell>()
             while (true) {
+                visited += curr
                 val next = curr.move(d)
 
                 if (!next.isInBounds(m, n)) {
                     break
                 }
 
-                when (grid[next.row][next.col]) {
-                    '.' -> {
-                        curr = next
-                        visited += next
-                    }
-
-                    '#' -> {
-                        d = d.turnRight()
-                    }
+                if (grid[next.row][next.col] == '#') {
+                    d = d.turnRight()
+                } else {
+                    curr = next
                 }
             }
             return visited.size
@@ -63,8 +57,7 @@ fun main() {
         for (row in 0 until m) {
             for (col in 0 until n) {
                 if (grid[row][col] == '^') {
-                    grid[row][col] = '.'
-                    return traverse(row, col)
+                    return countVisitedCells(Cell(row, col))
                 }
             }
         }
@@ -76,7 +69,7 @@ fun main() {
         val m = grid.size
         val n = grid[0].size
 
-        fun getStart(): Cell {
+        fun findStart(): Cell {
             for (row in 0 until m) {
                 for (col in 0 until n) {
                     if (grid[row][col] == '^') {
@@ -84,7 +77,7 @@ fun main() {
                     }
                 }
             }
-            error("Couldn't find the starting point")
+            error("Couldn't find the starting cell")
         }
 
         fun loopExists(start: Cell): Boolean {
@@ -111,9 +104,8 @@ fun main() {
             }
         }
 
-        val start = getStart()
-
-        var loops = 0
+        val start = findStart()
+        var numLoops = 0
         for (row in 0 until m) {
             for (col in 0 until n) {
                 if (grid[row][col] != '.') {
@@ -121,11 +113,11 @@ fun main() {
                 }
 
                 grid[row][col] = '#'
-                loops += if (loopExists(start)) 1 else 0
+                numLoops += if (loopExists(start)) 1 else 0
                 grid[row][col] = '.'
             }
         }
-        return loops
+        return numLoops
     }
 
     // test if implementation meets criteria from the description, like:
