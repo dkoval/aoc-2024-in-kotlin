@@ -6,10 +6,21 @@ import readInput
 private const val DAY_ID = "07"
 
 fun main() {
-    fun solve(input: List<String>, isGood: (res: Long, nums: List<Long>) -> Boolean): Long {
+    fun solve(input: List<String>, fs: List<(Long, Long) -> Long>): Long {
         val equations = input.map { line ->
             val (res, nums) = line.split(": ")
             res.toLong() to nums.split(" ").map { it.toLong() }
+        }
+
+        fun isGood(res: Long, nums: List<Long>): Boolean {
+            fun eval(curr: Long, index: Int): Boolean {
+                if (index == nums.size) {
+                    return curr == res
+                }
+                return fs.any { f -> eval(f(curr, nums[index]), index + 1) }
+            }
+
+            return nums.isNotEmpty() && eval(nums[0], 1)
         }
 
         return equations.asSequence()
@@ -19,35 +30,24 @@ fun main() {
     }
 
     fun part1(input: List<String>): Long {
-        fun isGood(res: Long, nums: List<Long>): Boolean {
-            fun eval(curr: Long, index: Int): Boolean {
-                if (index == nums.size) {
-                    return curr == res
-                }
-                return eval(curr * nums[index], index + 1) || eval(curr + nums[index], index + 1)
-            }
-            return nums.isNotEmpty() && eval(nums[0], 1)
-        }
-
-        return solve(input, ::isGood)
+        return solve(
+            input,
+            listOf(
+                { x, y -> x * y },
+                { x, y -> x + y }
+            )
+        )
     }
 
     fun part2(input: List<String>): Long {
-        fun isGood(res: Long, nums: List<Long>): Boolean {
-            fun concat(x: Long, y: Long): Long = (x.toString() + y.toString()).toLong()
-
-            fun eval(curr: Long, index: Int): Boolean {
-                if (index == nums.size) {
-                    return curr == res
-                }
-                return eval(curr * nums[index], index + 1)
-                        || eval(curr + nums[index], index + 1)
-                        || eval(concat(curr, nums[index]), index + 1)
-            }
-            return nums.isNotEmpty() && eval(nums[0], 1)
-        }
-
-        return solve(input, ::isGood)
+        return solve(
+            input,
+            listOf(
+                { x, y -> x * y },
+                { x, y -> x + y },
+                { x, y -> (x.toString() + y.toString()).toLong() }
+            )
+        )
     }
 
     // test if implementation meets criteria from the description, like:
