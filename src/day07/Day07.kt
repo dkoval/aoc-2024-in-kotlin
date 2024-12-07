@@ -14,6 +14,12 @@ fun main() {
 
         fun isGood(res: Long, nums: List<Long>): Boolean {
             fun eval(curr: Long, index: Int): Boolean {
+                // early termination
+                if (curr > res) {
+                    return false
+                }
+
+                // base case
                 if (index == nums.size) {
                     return curr == res
                 }
