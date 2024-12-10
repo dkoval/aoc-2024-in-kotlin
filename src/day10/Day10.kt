@@ -2,7 +2,6 @@ package day10
 
 import println
 import readInput
-import java.util.*
 
 private const val DAY_ID = "10"
 
@@ -47,33 +46,27 @@ fun main() {
                         && (grid[next.row][next.col] - grid[curr.row][curr.col] == 1)
             }
 
-            // BFS
             var count = 0
-            val q = ArrayDeque<Cell>()
             val visited = mutableSetOf<Cell>()
-            q.offer(start)
-            visited += start
-            var length = 1
-            while (q.isNotEmpty()) {
-                var size = q.size
-                while (size-- > 0) {
-                    val curr = q.poll()
-                    // reached the target?
-                    if (grid[curr.row][curr.col] == '9' && length % 2 == 0) {
-                        count++
-                        continue
-                    }
-                    // explore directions
-                    for ((dx, dy) in directions) {
-                        val next = curr.move(dx, dy)
-                        if (next.isInBounds(m, n) && next !in visited && goodMove(curr, next)) {
-                            q.offer(next)
-                            visited += next
-                        }
+            fun dfs(curr: Cell, length: Int) {
+                visited += curr
+
+                // base case
+                if (grid[curr.row][curr.col] == '9' && length % 2 == 0) {
+                    count++
+                    return
+                }
+
+                // explore directions
+                for ((dx, dy) in directions) {
+                    val next = curr.move(dx, dy)
+                    if (goodMove(curr, next) && next !in visited) {
+                        dfs(next, length + 1)
                     }
                 }
-                length++
             }
+
+            dfs(start, 1)
             return count
         }
 
