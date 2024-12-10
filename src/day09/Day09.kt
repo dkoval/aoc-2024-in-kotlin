@@ -10,7 +10,7 @@ fun main() {
         val n = input.length
 
         val disk = mutableListOf<Int>()
-        val spaces = mutableListOf<Int>()
+        val freeSpaces = mutableListOf<Int>()
         for (i in 0 until n step 2) {
             // file
             repeat(input[i].digitToInt()) {
@@ -21,7 +21,7 @@ fun main() {
             if (i + 1 < n) {
                 repeat(input[i + 1].digitToInt()) {
                     disk += -1
-                    spaces += disk.lastIndex
+                    freeSpaces += disk.lastIndex
                 }
             }
         }
@@ -35,7 +35,7 @@ fun main() {
                 right--
             }
 
-            val left = spaces[i]
+            val left = freeSpaces[i]
             if (left >= right) {
                 break
             }
@@ -44,7 +44,7 @@ fun main() {
             disk[left] = disk[right]
             disk[right] = -1
             right--
-            i++
+            i++ // proceed to the next free space
         }
 
         return disk.asSequence()
@@ -54,43 +54,46 @@ fun main() {
             .sum()
     }
 
+    data class Block(val offset: Int, val size: Int)
+
     fun part2(input: String): Long {
-        // file ID -> (file block offset on the disk, block size)
-        val files = mutableMapOf<Int, Pair<Int, Int>>()
-        // spaces[i] - (free space block offset on the disk, block size)
-        val spaces = mutableListOf<Pair<Int, Int>>()
+        // file ID -> file block
+        val files = mutableMapOf<Int, Block>()
+        // freeSpaces[i] - the i-th free space block
+        val freeSpaces = mutableListOf<Block>()
 
         var offset = 0
         for ((index, value) in input.withIndex()) {
-            val blockSize = value.digitToInt()
+            val size = value.digitToInt()
             if (index % 2 == 0) {
                 val fileId = index / 2
-                files[fileId] = offset to blockSize
+                files[fileId] = Block(offset, size)
             } else {
-                spaces += offset to blockSize
+                freeSpaces += Block(offset, size)
             }
-            offset += blockSize
+            offset += size
         }
 
+        // defragment the disk
         for (fileId in files.keys.reversed()) {
-            val (fileOffset, fileBlockSize) = files[fileId]!!
+            val file = files[fileId]!!
             // check if there's a contiguous block of spaces to fit the entire file
             var i = 0
-            while (i < spaces.size) {
-                val (freeSpaceOffset, freeSpaceBlockSize) = spaces[i]
-                if (freeSpaceOffset > fileOffset) {
+            while (i < freeSpaces.size) {
+                val freeSpace = freeSpaces[i]
+                if (freeSpace.offset > file.offset) {
                     break
                 }
-                if (freeSpaceBlockSize == fileBlockSize) {
+                if (freeSpace.size == file.size) {
                     // occupy the empty space
-                    files[fileId] = freeSpaceOffset to fileBlockSize
-                    spaces.removeAt(i) // TODO: can we do better?
+                    files[fileId] = Block(freeSpace.offset, file.size)
+                    freeSpaces.removeAt(i) // TODO: can this improved?
                     break
                 }
-                if (freeSpaceBlockSize > fileBlockSize) {
+                if (freeSpace.size > file.size) {
                     // occupy the empty space + update the remaining extra space
-                    files[fileId] = freeSpaceOffset to fileBlockSize
-                    spaces[i] = freeSpaceOffset + fileBlockSize to freeSpaceBlockSize - fileBlockSize
+                    files[fileId] = Block(freeSpace.offset, file.size)
+                    freeSpaces[i] = Block(freeSpace.offset + file.size, freeSpace.size - file.size)
                     break
                 }
                 i++
