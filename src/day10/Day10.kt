@@ -116,11 +116,11 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_test1")) == 1)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_test2")) == 2)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_test3")) == 4)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_test4")) == 3)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_test5")) == 36)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test1")) == 1)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test2")) == 2)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test3")) == 4)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test4")) == 3)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test5")) == 36)
 
     check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test1")) == 3)
     check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test2")) == 13)
