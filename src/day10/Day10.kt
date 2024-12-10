@@ -19,6 +19,14 @@ fun main() {
         fun isInBounds(m: Int, n: Int): Boolean = row in 0 until m && col in 0 until n
     }
 
+    fun goodMove(grid: List<List<Char>>, curr: Cell, next: Cell): Boolean {
+        val m = grid.size
+        val n = grid[0].size
+        return next.isInBounds(m, n)
+                && (grid[next.row][next.col].isDigit())
+                && (grid[next.row][next.col] - grid[curr.row][curr.col] == 1)
+    }
+
     fun solve(input: List<String>, traverse: (grid: List<List<Char>>, start: Cell) -> Int): Int {
         val grid = input.map { it.toList() }
         val m = grid.size
@@ -37,15 +45,6 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         fun traverse(grid: List<List<Char>>, start: Cell): Int {
-            val m = grid.size
-            val n = grid[0].size
-
-            fun goodMove(curr: Cell, next: Cell): Boolean {
-                return next.isInBounds(m, n)
-                        && (grid[next.row][next.col].isDigit())
-                        && (grid[next.row][next.col] - grid[curr.row][curr.col] == 1)
-            }
-
             var count = 0
             val visited = mutableSetOf<Cell>()
             fun dfs(curr: Cell, length: Int) {
@@ -60,7 +59,7 @@ fun main() {
                 // explore directions
                 for ((dx, dy) in directions) {
                     val next = curr.move(dx, dy)
-                    if (goodMove(curr, next) && next !in visited) {
+                    if (goodMove(grid, curr, next) && next !in visited) {
                         dfs(next, length + 1)
                     }
                 }
@@ -75,15 +74,6 @@ fun main() {
 
     fun part2(input: List<String>): Int {
         fun traverse(grid: List<List<Char>>, start: Cell): Int {
-            val m = grid.size
-            val n = grid[0].size
-
-            fun goodMove(curr: Cell, next: Cell): Boolean {
-                return next.isInBounds(m, n)
-                        && (grid[next.row][next.col].isDigit())
-                        && (grid[next.row][next.col] - grid[curr.row][curr.col] == 1)
-            }
-
             var count = 0
             fun dfs(curr: Cell, visited: Set<Cell>) {
                 // base case
@@ -95,7 +85,7 @@ fun main() {
                 // explore directions
                 for ((dx, dy) in directions) {
                     val next = curr.move(dx, dy)
-                    if (goodMove(curr, next) && next !in visited) {
+                    if (goodMove(grid, curr, next) && next !in visited) {
                         dfs(next, visited + next)
                     }
                 }
