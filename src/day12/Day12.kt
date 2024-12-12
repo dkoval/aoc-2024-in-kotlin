@@ -14,15 +14,34 @@ fun main() {
         intArrayOf(0, 1)
     )
 
-    data class Region(val area: Int, val perimeter: Int)
+    data class RegionInfo(val area: Int, val other: Int)
 
-    fun part1(input: List<String>): Long {
+    fun solve(
+        input: List<String>,
+        traverse: (grid: List<List<Char>>, startRow: Int, startCol: Int, visited: Array<BooleanArray>) -> RegionInfo
+    ): Int {
         val grid = input.map { it.toList() }
         val m = grid.size
         val n = grid[0].size
 
+        var total = 0
         val visited = Array(m) { BooleanArray(n) }
-        fun traverse(startRow: Int, startCol: Int): Region {
+        for (row in 0 until m) {
+            for (col in 0 until n) {
+                if (!visited[row][col]) {
+                    val (area, other) = traverse(grid, row, col, visited)
+                    total += area * other
+                }
+            }
+        }
+        return total
+    }
+
+    fun part1(input: List<String>): Int {
+        fun traverse(grid: List<List<Char>>, startRow: Int, startCol: Int, visited: Array<BooleanArray>): RegionInfo {
+            val m = grid.size
+            val n = grid[0].size
+
             var area = 0
             var perimeter = 0
             fun dfs(row: Int, col: Int) {
@@ -44,28 +63,15 @@ fun main() {
             }
 
             dfs(startRow, startCol)
-            return Region(area, perimeter)
+            return RegionInfo(area, perimeter)
         }
 
-        var total = 0L
-        for (row in 0 until m) {
-            for (col in 0 until n) {
-                if (!visited[row][col]) {
-                    val (area, perimeter) = traverse(row, col)
-                    total += area * perimeter
-                }
-            }
-        }
-        return total
+        return solve(input, ::traverse)
     }
 
     data class Cell(val row: Int, val col: Int, val dx: Int, val dy: Int)
 
-    fun part2(input: List<String>): Long {
-        val grid = input.map { it.toList() }
-        val m = grid.size
-        val n = grid[0].size
-
+    fun part2(input: List<String>): Int {
         fun countSides(cells: Set<Cell>): Int {
             var count = 0
             for ((row, col, dx, dy) in cells) {
@@ -80,8 +86,10 @@ fun main() {
             return count
         }
 
-        val visited = Array(m) { BooleanArray(n) }
-        fun traverse(startRow: Int, startCol: Int): Region {
+        fun traverse(grid: List<List<Char>>, startRow: Int, startCol: Int, visited: Array<BooleanArray>): RegionInfo {
+            val m = grid.size
+            val n = grid[0].size
+
             var area = 0
             val region = mutableSetOf<Cell>()
             fun dfs(row: Int, col: Int) {
@@ -103,31 +111,22 @@ fun main() {
             }
 
             dfs(startRow, startCol)
-            return Region(area, countSides(region))
+            return RegionInfo(area, countSides(region))
         }
 
-        var total = 0L
-        for (row in 0 until m) {
-            for (col in 0 until n) {
-                if (!visited[row][col]) {
-                    val (area, perimeter) = traverse(row, col)
-                    total += area * perimeter
-                }
-            }
-        }
-        return total
+        return solve(input, ::traverse)
     }
 
     // test if implementation meets criteria from the description, like:
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test1")) == 140L)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test2")) == 772L)
-    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test3")) == 1930L)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test1")) == 140)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test2")) == 772)
+    check(part1(readInput("day$DAY_ID/Day${DAY_ID}_part1_test3")) == 1930)
 
-    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test1")) == 80L)
-    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test2")) == 436L)
-    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test3")) == 236L)
-    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test4")) == 368L)
-    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test3")) == 1206L)
+    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test1")) == 80)
+    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test2")) == 436)
+    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test3")) == 236)
+    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part2_test4")) == 368)
+    check(part2(readInput("day$DAY_ID/Day${DAY_ID}_part1_test3")) == 1206)
 
     val input = readInput("day$DAY_ID/Day$DAY_ID")
     part1(input).println() // answer 1546338
