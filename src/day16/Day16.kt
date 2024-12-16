@@ -44,7 +44,6 @@ fun main() {
             val visited = mutableSetOf<Pair<Cell, Direction>>()
 
             q.offer(TraversalInfo(start, Direction.EAST, 0))
-            visited += start to Direction.EAST
             while (q.isNotEmpty()) {
                 val (curr, d, cost) = q.poll()
                 visited += curr to d
@@ -56,14 +55,15 @@ fun main() {
 
                 // move in the current direction
                 var next = curr.move(d)
-                if (grid[next.row][next.col] != '#' && (next to d) !in visited) {
+                if ((next to d) !in visited && grid[next.row][next.col] != '#') {
                     q.offer(TraversalInfo(next, d, cost + 1))
                 }
 
                 // rotate clockwise or counterclockwise 90 degrees
                 for (nd in d.neighbors()) {
                     // only direction changes!!!
-                    if ((curr to nd) !in visited) {
+                    next = curr.move(nd)
+                    if ((curr to nd) !in visited && grid[next.row][next.col] != '#') {
                         q.offer(TraversalInfo(curr, nd, cost + 1000))
                     }
                 }
@@ -92,8 +92,6 @@ fun main() {
             val visited = mutableSetOf<Pair<Cell, Direction>>()
 
             q.offer(TraversalInfo(start, Direction.EAST, 0) to setOf(start))
-            visited += start to Direction.EAST
-
             var bestCost = Int.MAX_VALUE
             val uniq = mutableSetOf<Cell>()
             while (q.isNotEmpty()) {
@@ -103,22 +101,23 @@ fun main() {
 
                 // reached the ending point?
                 if (grid[curr.row][curr.col] == 'E') {
-                    if (cost <= bestCost) {
-                        bestCost = cost
+                    bestCost = minOf(bestCost, cost)
+                    if (cost == bestCost) {
                         uniq += path
                     }
                 }
 
                 // move in the current direction
                 var next = curr.move(d)
-                if (grid[next.row][next.col] != '#' && (next to d) !in visited) {
+                if ((next to d) !in visited && grid[next.row][next.col] != '#') {
                     q.offer(TraversalInfo(next, d, cost + 1) to path + next)
                 }
 
                 // rotate clockwise or counterclockwise 90 degrees
                 for (nd in d.neighbors()) {
                     // only direction changes!!!
-                    if ((curr to nd) !in visited) {
+                    var next = curr.move(nd)
+                    if ((curr to nd) !in visited && grid[next.row][next.col] != '#') {
                         q.offer(TraversalInfo(curr, nd, cost + 1000) to path)
                     }
                 }
