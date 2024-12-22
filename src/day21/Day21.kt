@@ -99,27 +99,27 @@ fun main() {
             return cartesianProduct(paths).map { it.joinToString("") }
         }
 
-        fun calcLength(code: String, numRobots: Int): Long {
+        fun calcLength(path: String, numRobots: Int): Long {
             val cache = mutableMapOf<Pair<String, Int>, Long>()
-            fun calc(code: String, numRobots: Int): Long {
+            fun calc(path: String, numRobots: Int): Long {
                 if (numRobots == 0) {
-                    return code.length.toLong()
+                    return path.length.toLong()
                 }
 
                 // already solved?
-                val key = code to numRobots
+                val key = path to numRobots
                 if (key in cache) {
                     return cache[key]!!
                 }
 
                 var length = 0L
-                for ((k1, k2) in "A$code".zip(code)) {
-                    length += dirKeypadPaths[k1 to k2]!!.minOf { path -> calc(path, numRobots - 1) }
+                for ((k1, k2) in "A$path".zip(path)) {
+                    length += dirKeypadPaths[k1 to k2]!!.minOf { calc(it, numRobots - 1) }
                 }
                 return length.also { cache[key] = it }
             }
 
-            return calc(code, numRobots)
+            return calc(path, numRobots)
         }
 
         return input.sumOf { code ->
