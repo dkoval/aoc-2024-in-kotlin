@@ -46,34 +46,30 @@ fun main() {
             adj.getOrPut(v) { mutableSetOf() } += u
         }
 
-        // Bron-Kerbosch algorithm to find the maximum clique in a graph
-        // (GitHub Copilot generated this implementation)
-        fun findMaxClique(adj: Map<String, Set<String>>): Set<String> {
-            var maxClique = emptySet<String>()
-            fun bronKerbosch(R: Set<String>, _P: Set<String>, _X: Set<String>) {
-                val P = _P.toMutableSet()
-                val X = _X.toMutableSet()
-
-                if (P.isEmpty() && X.isEmpty()) {
-                    if (R.size > maxClique.size) {
-                        maxClique = R
-                    }
-                    return
-                }
-
-                val pivot = (P + X).first()
-                for (v in P - adj[pivot]!!) {
-                    bronKerbosch(R + v, P.intersect(adj[v]!!), X.intersect(adj[v]!!))
-                    P -= v
-                    X += v
-                }
+        // Search for the maximum clique in a graph.
+        // Clique is a complete subgraph of a graph, i.e. a subset of vertices such that every two distinct vertices are adjacent.
+        val cliques = mutableSetOf<List<String>>()
+        fun findClique(node: String, connected: Set<String>) {
+            val clique = connected.sorted()
+            if (clique in cliques) {
+                return
             }
 
-            bronKerbosch(emptySet(), adj.keys, emptySet())
-            return maxClique
+            cliques += clique
+            for (neighbor in adj[node]!!) {
+                // neighbor must be connected to all nodes in req, i.e.
+                // connected is a subset of adj[neighbor]
+                if (neighbor !in connected && connected.all { it in adj[neighbor]!! }) {
+                    findClique(neighbor, connected + neighbor)
+                }
+            }
         }
 
-        return findMaxClique(adj).sorted().joinToString(",")
+        for (u in adj.keys) {
+            findClique(u, setOf(u))
+        }
+
+        return cliques.maxBy { it.size }.joinToString(",")
     }
 
     // test if implementation meets criteria from the description, like:
