@@ -49,7 +49,7 @@ fun main() {
         // Search for the maximum clique in a graph.
         // Clique is a complete subgraph of a graph, i.e. a subset of vertices such that every two distinct vertices are adjacent.
         val cliques = mutableSetOf<List<String>>()
-        fun findClique(node: String, connected: Set<String>) {
+        fun findCliques(node: String, connected: Set<String>) {
             val clique = connected.sorted()
             if (clique in cliques) {
                 return
@@ -60,13 +60,14 @@ fun main() {
                 // neighbor must be connected to all nodes in req, i.e.
                 // connected is a subset of adj[neighbor]
                 if (neighbor !in connected && connected.all { it in adj[neighbor]!! }) {
-                    findClique(neighbor, connected + neighbor)
+                    findCliques(neighbor, connected + neighbor)
                 }
             }
         }
 
         for (u in adj.keys) {
-            findClique(u, setOf(u))
+            // find all cliques that contain node u
+            findCliques(u, setOf(u))
         }
 
         return cliques.maxBy { it.size }.joinToString(",")
