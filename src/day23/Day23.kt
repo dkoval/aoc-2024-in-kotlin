@@ -57,8 +57,8 @@ fun main() {
 
             cliques += clique
             for (neighbor in adj[node]!!) {
-                // neighbor must be connected to all nodes in req, i.e.
-                // connected is a subset of adj[neighbor]
+                // `neighbor` must be connected to all nodes in `connected`, i.e.
+                // `connected` is a subset of `adj[neighbor]`
                 if (neighbor !in connected && connected.all { it in adj[neighbor]!! }) {
                     findCliques(neighbor, connected + neighbor)
                 }
