@@ -49,10 +49,6 @@ fun main() {
             return op(calc(x), calc(y)).also { values[wire] = it }
         }
 
-        for ((out, _) in gates) {
-            calc(out)
-        }
-
         return gates.keys.filter { it.startsWith("z") }
             .sorted()
             .fold(mutableListOf<Int>()) { ans, wire ->
