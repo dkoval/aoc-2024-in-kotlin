@@ -55,10 +55,6 @@ fun main() {
         return count
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
-    }
-
     // test if implementation meets criteria from the description, like:
     val testInput = readInputAsString("day$DAY_ID/Day${DAY_ID}_test")
     check(part1(testInput) == 3)
