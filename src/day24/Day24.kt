@@ -139,19 +139,21 @@ fun main() {
 
 private fun makeWire(c: Char, i: Int): String = "$c${i.toString().padStart(2, '0')}"
 
-private fun matchesAt(gates: Map<String, Gate>, i: Int): Boolean = matchesOutput(gates, makeWire('z', i), i)
+private fun matchesAt(gates: Map<String, Gate>, i: Int): Boolean {
+    fun matchesWire(wire: String): Boolean {
+        if (wire !in gates) return false
 
-private fun matchesOutput(gates: Map<String, Gate>, wire: String, i: Int): Boolean {
-    if (wire !in gates) return false
+        // z[0] = x[0] ^ y[0]
+        // z[i] = x[i] ^ y[i] ^ carry[i], if i > 0
+        val (x, y, op) = gates[wire]!!
+        if (op != XOR) return false
 
-    // z[0] = x[0] ^ y[0]
-    // z[i] = x[i] ^ y[i] ^ carry[i], if i > 0
-    val (x, y, op) = gates[wire]!!
-    if (op != XOR) return false
+        if (i == 0) return setOf(x, y) == setOf(makeWire('x', 0), makeWire('y', 0))
+        return (matchesXor(gates, x, i) && matchesCarry(gates, y, i))
+                || (matchesXor(gates, y, i) && matchesCarry(gates, x, i))
+    }
 
-    if (i == 0) return setOf(x, y) == setOf(makeWire('x', 0), makeWire('y', 0))
-    return (matchesXor(gates, x, i) && matchesCarry(gates, y, i))
-            || (matchesXor(gates, y, i) && matchesCarry(gates, x, i))
+    return matchesWire(makeWire('z', i))
 }
 
 private fun matchesXor(gates: Map<String, Gate>, wire: String, i: Int): Boolean {
