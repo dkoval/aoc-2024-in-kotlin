@@ -111,23 +111,17 @@ fun main() {
         val swaps = mutableListOf<String>()
         repeat(4) {
             val before = failsAt()
-            for (wire1 in gates.keys) {
-                var swapped = false
+            loop@ for (wire1 in gates.keys) {
                 for (wire2 in gates.keys) {
                     if (wire1 == wire2) continue
 
                     swapWires(wire1, wire2)
                     if (failsAt() > before) {
-                        swapped = true
                         swaps += wire1
                         swaps += wire2
-                        break
+                        break@loop
                     }
                     swapWires(wire2, wire1)
-                }
-
-                if (swapped) {
-                    break
                 }
             }
         }
