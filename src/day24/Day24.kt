@@ -78,6 +78,7 @@ fun main() {
 
         fun prettyPrint(wire: String, depth: Int = 0, maxDepth: Int = 5) {
             if (depth > maxDepth) {
+                println("${"  ".repeat(depth)}... (truncated)")
                 return
             }
 
@@ -106,22 +107,22 @@ fun main() {
             return i
         }
 
-        //prettyPrint(makeWire('z', 11))
-
         val swaps = mutableListOf<String>()
         repeat(4) {
             val before = failsAt()
+            println("Failed at position $before")
+            prettyPrint(makeWire('z', before))
             loop@ for (wire1 in gates.keys) {
                 for (wire2 in gates.keys) {
                     if (wire1 == wire2) continue
-
                     swapWires(wire1, wire2)
                     if (failsAt() > before) {
                         swaps += wire1
                         swaps += wire2
+                        println("Fixed position $before by swapping $wire1 <-> $wire2\n")
                         break@loop
                     }
-                    swapWires(wire2, wire1)
+                    swapWires(wire1, wire2)
                 }
             }
         }
